@@ -16,8 +16,6 @@ app.use(cors());
 const dbURI = process.env.MONGODB_URI;
 mongoose.connect(
   'mongodb+srv://sathwikpentakoti:Sathwik575@cluster0.agwd2xm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
 }).then(() => {
   console.log('Connected to MongoDB');
 }).catch((err) => {
