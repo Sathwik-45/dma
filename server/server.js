@@ -1,47 +1,98 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const cors = require("cors"); // Enable cross-origin support
 
+// Initialize the app
 const app = express();
-const PORT = 5000;
 
-// Middleware
+// Middleware to parse incoming request bodies
+app.use(bodyParser.json());
+
+// Enable CORS for all origins (you can adjust this later for production)
 app.use(cors());
-app.use(express.json());
 
-// Connect to MongoDB Atlas
+// MongoDB connection
+const dbURI = process.env.MONGODB_URI;
 mongoose.connect(
-  'mongodb+srv://sathwikpentakoti:Sathwik575@cluster0.agwd2xm.mongodb.net/digitalMarketingAgency?retryWrites=true&w=majority&appName=Cluster0',
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-).then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-// Schema and Model
-const leadSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  message: String,
+  'mongodb+srv://sathwikpentakoti:Sathwik575@cluster0.agwd2xm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((err) => {
+  console.error('MongoDB connection error:', err);
 });
 
-const Lead = mongoose.model('Lead', leadSchema);
+// Define Mongoose schemas
+const leadSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  message: { type: String, required: true },
+});
 
-// API Route
-app.post('/api/contact', async (req, res) => {
-  const { name, email, message } = req.body;
+const testimonialSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  companyname: { type: String, required: true },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
 
+// Create Mongoose models
+const Lead = mongoose.model("Lead", leadSchema);
+const Testimonial = mongoose.model("Testimonial", testimonialSchema);
+
+// POST route for contact form submissions
+app.post("/api/contact", async (req, res) => {
   try {
+    console.log("Received contact form data:", req.body);
+    const { name, email, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ message: "Name, Email, and Message are required." });
+    }
+
     const newLead = new Lead({ name, email, message });
     await newLead.save();
-    res.json({ message: 'Message received! Thank you.' });
-  } catch (err) {
-    console.error('Error saving lead:', err);
-    res.status(500).json({ message: 'Server error' });
+
+    res.status(200).json({ message: "Contact form submitted successfully!" });
+  } catch (error) {
+    console.error("Error submitting contact form:", error);
+    res.status(500).json({ message: "Error processing your request." });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+// POST route for testimonial submissions
+app.post("/api/testimonial", async (req, res) => {
+  try {
+    console.log("Received testimonial data:", req.body);
+    const { name, companyname, message } = req.body;
+
+    if (!name || !companyname || !message) {
+      return res.status(400).json({ message: "Name, Company Name, and Message are required." });
+    }
+
+    const newTestimonial = new Testimonial({ name, companyname, message });
+    await newTestimonial.save();
+
+    res.status(200).json({ message: "Testimonial submitted successfully!" });
+  } catch (error) {
+    console.error("Error submitting testimonial:", error);
+    res.status(500).json({ message: "Error processing your request." });
+  }
+});
+app.get("/api/testimonials", async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find();
+    res.status(200).json(testimonials);
+  } catch (error) {
+    console.error("Error fetching testimonials:", error);
+    res.status(500).json({ message: "Error fetching testimonials." });
+  }
+});
+
+// Start the server
+const port = 5000;
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });
