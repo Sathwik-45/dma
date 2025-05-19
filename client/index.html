@@ -187,106 +187,64 @@
       }
       
     }
-.home-section {
-  min-height: 100vh;
+.home-hero {
+  height: 100vh;
+  padding: 50px;
+  background: linear-gradient(135deg, #f4f4f4, #e0f7ff);
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 40px 20px;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.home-brand {
+  max-width: 500px;
   text-align: center;
-  background: linear-gradient(to bottom right, #f9fcff, #e6f2ff);
-  position: relative;
-  overflow: hidden;
 }
 
 .brand-name {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 15px;
+  font-size: 3rem;
+  font-weight: bold;
   color: #003366;
 }
 
 .tagline {
   font-size: 1.2rem;
-  color: #444;
-  margin-bottom: 40px;
+  color: #555;
+  margin-top: 10px;
 }
 
-/* Rotating icon wheel */
-.icon-wheel {
-  width: 220px;
-  height: 220px;
-  position: relative;
+.sphere-container {
+  width: 400px;
+  height: 400px;
+  perspective: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.rotate {
+.sphere {
   width: 100%;
   height: 100%;
   position: relative;
-  animation: rotateIcons 12s linear infinite;
-  transform-origin: center center;
+  transform-style: preserve-3d;
+  animation: spin 20s infinite linear;
 }
 
-.rotate i {
-  font-size: 22px;
-  color: #007bff;
+.sphere i {
   position: absolute;
-  transform-origin: 110px 110px; /* center of wheel */
+  font-size: 24px;
+  color: #007bff;
+  transform-origin: center;
 }
 
-/* Positioning each icon like a clock face */
-.rotate i:nth-child(1) { transform: rotate(0deg) translateX(110px); }
-.rotate i:nth-child(2) { transform: rotate(30deg) translateX(110px); }
-.rotate i:nth-child(3) { transform: rotate(60deg) translateX(110px); }
-.rotate i:nth-child(4) { transform: rotate(90deg) translateX(110px); }
-.rotate i:nth-child(5) { transform: rotate(120deg) translateX(110px); }
-.rotate i:nth-child(6) { transform: rotate(150deg) translateX(110px); }
-.rotate i:nth-child(7) { transform: rotate(180deg) translateX(110px); }
-.rotate i:nth-child(8) { transform: rotate(210deg) translateX(110px); }
-.rotate i:nth-child(9) { transform: rotate(240deg) translateX(110px); }
-.rotate i:nth-child(10) { transform: rotate(270deg) translateX(110px); }
-.rotate i:nth-child(11) { transform: rotate(300deg) translateX(110px); }
-.rotate i:nth-child(12) { transform: rotate(330deg) translateX(110px); }
-
-@keyframes rotateIcons {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Responsive tweaks */
-@media (max-width: 600px) {
-  .brand-name {
-    font-size: 1.8rem;
+@keyframes spin {
+  from {
+    transform: rotateY(0deg) rotateX(0deg);
   }
-
-  .tagline {
-    font-size: 1rem;
+  to {
+    transform: rotateY(360deg) rotateX(360deg);
   }
-
-  .icon-wheel {
-    width: 160px;
-    height: 160px;
-  }
-
-  .rotate i {
-    font-size: 18px;
-    transform-origin: 80px 80px;
-  }
-
-  /* Adjust radius */
-  .rotate i:nth-child(1) { transform: rotate(0deg) translateX(80px); }
-  .rotate i:nth-child(2) { transform: rotate(30deg) translateX(80px); }
-  .rotate i:nth-child(3) { transform: rotate(60deg) translateX(80px); }
-  .rotate i:nth-child(4) { transform: rotate(90deg) translateX(80px); }
-  .rotate i:nth-child(5) { transform: rotate(120deg) translateX(80px); }
-  .rotate i:nth-child(6) { transform: rotate(150deg) translateX(80px); }
-  .rotate i:nth-child(7) { transform: rotate(180deg) translateX(80px); }
-  .rotate i:nth-child(8) { transform: rotate(210deg) translateX(80px); }
-  .rotate i:nth-child(9) { transform: rotate(240deg) translateX(80px); }
-  .rotate i:nth-child(10) { transform: rotate(270deg) translateX(80px); }
-  .rotate i:nth-child(11) { transform: rotate(300deg) translateX(80px); }
-  .rotate i:nth-child(12) { transform: rotate(330deg) translateX(80px); }
 }
   </style>
 </head>
@@ -362,29 +320,18 @@
       document.getElementById('customPopup').classList.add('hidden');
     }
   </script>
-<header id="home" class="home-section">
-  <div class="content">
+<header id="home" class="home-hero d-flex align-items-center justify-content-between">
+  <div class="home-brand text-center">
     <h1 class="brand-name">SK DIGITAL Marketing Agency</h1>
     <p class="tagline">Your growth is our mission. Let us help you shine online!</p>
   </div>
-  <div class="icon-wheel">
-    <div class="rotate">
-      <!-- Add as many icons as you'd like -->
-      <i class="bi bi-facebook"></i>
-      <i class="bi bi-instagram"></i>
-      <i class="bi bi-twitter-x"></i>
-      <i class="bi bi-linkedin"></i>
-      <i class="bi bi-google"></i>
-      <i class="bi bi-youtube"></i>
-      <i class="bi bi-bar-chart-line"></i>
-      <i class="bi bi-envelope"></i>
-      <i class="bi bi-globe"></i>
-      <i class="bi bi-megaphone"></i>
-      <i class="bi bi-search"></i>
-      <i class="bi bi-cursor"></i>
+  <div class="sphere-container">
+    <div class="sphere" id="iconSphere">
+      <!-- Icons will rotate here -->
     </div>
   </div>
 </header>
+
 
 
 
