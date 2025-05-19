@@ -187,6 +187,66 @@
       }
       
     }
+    .home-hero {
+  height: 100vh;
+  padding: 50px;
+  background: linear-gradient(135deg, #f4f4f4, #e0f7ff);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.home-brand {
+  max-width: 500px;
+  text-align: center;
+}
+
+.brand-name {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #003366;
+}
+
+.tagline {
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: 10px;
+}
+
+.sphere-container {
+  width: 400px;
+  height: 400px;
+  perspective: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sphere {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: spin 20s infinite linear;
+}
+
+.sphere i {
+  position: absolute;
+  font-size: 24px;
+  color: #007bff;
+  transform-origin: center;
+}
+
+@keyframes spin {
+  from {
+    transform: rotateY(0deg) rotateX(0deg);
+  }
+  to {
+    transform: rotateY(360deg) rotateX(360deg);
+  }
+}
+
   </style>
 </head>
 <body>
@@ -263,10 +323,18 @@
   </script>
 
   <!-- Header -->
-  <header id="home">
-    <h1>Welcome to Our SK DIGITAL Marketing Agency</h1>
-    <p>Your growth is our mission. Let us help you shine online!</p>
-  </header>
+<header id="home" class="home-hero d-flex align-items-center justify-content-between">
+  <div class="home-brand text-center">
+    <h1 class="brand-name">SK DIGITAL Marketing Agency</h1>
+    <p class="tagline">Your growth is our mission. Let us help you shine online!</p>
+  </div>
+  <div class="sphere-container">
+    <div class="sphere" id="iconSphere">
+      <!-- Icons will rotate here -->
+    </div>
+  </div>
+</header>
+
 
   <!-- Services Section -->
   <section id="services" class="container">
@@ -578,6 +646,31 @@
     const message = document.getElementById("message").value;
     alert("Thank you for contacting us! We'll get back to you soon.");
     document.getElementById("leadForm").reset();
+  });
+</script>
+<script>
+  const icons = [
+    "bi-facebook", "bi-instagram", "bi-twitter-x", "bi-youtube", "bi-linkedin",
+    "bi-google", "bi-pinterest", "bi-envelope", "bi-graph-up", "bi-globe",
+    "bi-bar-chart-line", "bi-phone", "bi-camera-video", "bi-bullseye", "bi-megaphone"
+  ];
+
+  const sphere = document.getElementById("iconSphere");
+  const radius = 150;
+  const iconCount = icons.length;
+
+  icons.forEach((icon, i) => {
+    const angleX = Math.acos(-1 + (2 * i) / iconCount);
+    const angleY = Math.sqrt(iconCount * Math.PI) * angleX;
+
+    const x = radius * Math.sin(angleX) * Math.cos(angleY);
+    const y = radius * Math.sin(angleX) * Math.sin(angleY);
+    const z = radius * Math.cos(angleX);
+
+    const iconEl = document.createElement("i");
+    iconEl.className = `bi ${icon}`;
+    iconEl.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+    sphere.appendChild(iconEl);
   });
 </script>
 
