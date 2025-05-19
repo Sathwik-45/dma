@@ -197,7 +197,7 @@
 
 .brand-name {
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: bold;
   color: #003366;
 }
 
@@ -207,26 +207,40 @@
   margin-top: 15px;
 }
 
-.sphere-container {
+/* Rotating Sphere */
+.icon-sphere {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
   position: relative;
-  width: 300px;
-  height: 300px;
-  perspective: 1000px;
+  perspective: 800px;
+  background: rgba(0, 123, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.sphere {
+.rotate {
   width: 100%;
   height: 100%;
   position: relative;
+  animation: spin 12s linear infinite;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   transform-style: preserve-3d;
-  animation: spin 20s linear infinite;
 }
 
-.sphere i {
-  position: absolute;
+.rotate i {
   font-size: 24px;
   color: #007bff;
-  transform-origin: center;
+  margin: 10px;
+  transition: transform 0.3s;
+}
+
+.rotate i:hover {
+  transform: scale(1.2);
 }
 
 @keyframes spin {
@@ -238,7 +252,7 @@
   }
 }
 
-/* Responsive Adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .brand-name {
     font-size: 2rem;
@@ -248,21 +262,16 @@
     font-size: 1rem;
   }
 
-  .sphere-container {
-    width: 250px;
-    height: 250px;
-    margin: 0 auto;
+  .icon-sphere {
+    width: 160px;
+    height: 160px;
+  }
+
+  .rotate i {
+    font-size: 20px;
+    margin: 6px;
   }
 }
-    
-    #spl{
-      color:red;
-      font-family:college;
-      font-size:3rem;
-    }
-    
-
-
   </style>
 </head>
 <body>
@@ -342,18 +351,28 @@
 <header id="home" class="home-hero">
   <div class="container">
     <div class="row align-items-center text-center text-md-start">
-      <div class="col-md-6 mb-4 mb-md-0">
+      <div class="col-md-6">
         <h1 class="brand-name">SK DIGITAL Marketing Agency</h1>
         <p class="tagline">Your growth is our mission. Let us help you shine online!</p>
       </div>
       <div class="col-md-6 d-flex justify-content-center">
-        <div class="sphere-container">
-          <div class="sphere" id="iconSphere"></div>
+        <div class="icon-sphere">
+          <div class="rotate">
+            <i class="bi bi-facebook"></i>
+            <i class="bi bi-instagram"></i>
+            <i class="bi bi-twitter-x"></i>
+            <i class="bi bi-linkedin"></i>
+            <i class="bi bi-youtube"></i>
+            <i class="bi bi-google"></i>
+            <i class="bi bi-envelope"></i>
+            <i class="bi bi-bar-chart-line"></i>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </header>
+
 
 
 
