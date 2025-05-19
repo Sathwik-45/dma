@@ -188,39 +188,30 @@
       
     }
 .home-hero {
-  height: 100vh;
-  padding: 50px;
-  background: linear-gradient(135deg, #f4f4f4, #e0f7ff);
+  min-height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  flex-wrap: wrap;
-}
-
-.home-brand {
-  max-width: 500px;
-  text-align: center;
+  background: linear-gradient(to bottom right, #f8f9fa, #e0f7ff);
+  padding: 40px 0;
 }
 
 .brand-name {
-  font-size: 3rem;
-  font-weight: bold;
+  font-size: 2.5rem;
+  font-weight: 700;
   color: #003366;
 }
 
 .tagline {
   font-size: 1.2rem;
   color: #555;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .sphere-container {
-  width: 400px;
-  height: 400px;
+  position: relative;
+  width: 300px;
+  height: 300px;
   perspective: 1000px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .sphere {
@@ -228,7 +219,7 @@
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  animation: spin 20s infinite linear;
+  animation: spin 20s linear infinite;
 }
 
 .sphere i {
@@ -239,13 +230,31 @@
 }
 
 @keyframes spin {
-  from {
+  0% {
     transform: rotateY(0deg) rotateX(0deg);
   }
-  to {
+  100% {
     transform: rotateY(360deg) rotateX(360deg);
   }
 }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .brand-name {
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: 1rem;
+  }
+
+  .sphere-container {
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -320,21 +329,21 @@
       document.getElementById('customPopup').classList.add('hidden');
     }
   </script>
-<header id="home" class="home-hero d-flex align-items-center justify-content-between">
-  <div class="home-brand text-center">
-    <h1 class="brand-name">SK DIGITAL Marketing Agency</h1>
-    <p class="tagline">Your growth is our mission. Let us help you shine online!</p>
-  </div>
-  <div class="sphere-container">
-    <div class="sphere" id="iconSphere">
-      <!-- Icons will rotate here -->
+<header id="home" class="home-hero">
+  <div class="container">
+    <div class="row align-items-center text-center text-md-start">
+      <div class="col-md-6 mb-4 mb-md-0">
+        <h1 class="brand-name">SK DIGITAL Marketing Agency</h1>
+        <p class="tagline">Your growth is our mission. Let us help you shine online!</p>
+      </div>
+      <div class="col-md-6 d-flex justify-content-center">
+        <div class="sphere-container">
+          <div class="sphere" id="iconSphere"></div>
+        </div>
+      </div>
     </div>
   </div>
 </header>
-
-
-
-
 
 
 
