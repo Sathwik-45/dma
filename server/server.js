@@ -43,8 +43,11 @@ const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dma';
 const JWT_SECRET = process.env.JWT_SECRET || "secret123";
 
 mongoose.connect(dbURI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+  .then(() => console.log("MongoDB Connected Successfully"))
+  .catch(err => {
+    console.error("CRITICAL: MongoDB Connection Error!");
+    console.error(err);
+  });
 
 
 // ---------- Schemas ----------
@@ -150,8 +153,9 @@ app.get("/api/testimonials", async (req, res) => {
 
 // ---------- ROOT ROUTE ----------
 app.get("/", (req, res) => {
-  const dbStatus = mongoose.connection.readyState === 1 ? "Connected 🟢" : "Disconnected 🔴";
-  res.send(`DMA Backend API Running 🚀 | Database: ${dbStatus}`);
+  const states = ["Disconnected 🔴", "Connected 🟢", "Connecting 🟡", "Disconnecting 🟠"];
+  const dbStatus = states[mongoose.connection.readyState] || "Unknown ⚪";
+  res.send(`DMA Backend API Running 🚀 | Database Status: ${dbStatus} (Code: ${mongoose.connection.readyState})`);
 });
 
 
