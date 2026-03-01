@@ -39,7 +39,7 @@ app.use(express.json());
 
 
 // ---------- MongoDB ----------
-const dbURI = process.env.MONGODB_URI;
+const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dma';
 const JWT_SECRET = process.env.JWT_SECRET || "secret123";
 
 mongoose.connect(dbURI)
