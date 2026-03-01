@@ -8,12 +8,24 @@ const jwt = require("jsonwebtoken");
 // Initialize the app
 const app = express();
 
-// Enable CORS
+// Enable CORS with expanded options
 app.use(cors({
-  origin: ["https://dma-bay.vercel.app", "http://localhost:5000", "http://localhost:63083"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
+  origin: function (origin, callback) {
+    // Check if origin is allowed or if it's a local request
+    const allowedOrigins = ["https://dma-bay.vercel.app", "http://localhost:5000", "http://localhost:63083"];
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
+
+// Handle preflight requests
+app.options("*", cors());
 
 // Middleware to parse incoming request bodies
 app.use(bodyParser.json());
