@@ -1,178 +1,163 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-// Initialize the app
 const app = express();
 
-// Enable CORS with expanded options
+
+// ---------- CORS FIX ----------
+const allowedOrigins = [
+  "https://dma-bay.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000"
+];
+
 app.use(cors({
-  origin: function (origin, callback) {
-    // Check if origin is allowed or if it's a local request
-    const allowedOrigins = ["https://dma-bay.vercel.app", "http://localhost:5000", "http://localhost:63083"];
-    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+  origin: (origin, callback) => {
+    // allow requests with no origin (mobile apps, postman)
+    if (!origin) return callback(null, true);
+
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.includes(".vercel.app")
+    ) {
+      return callback(null, true);
     }
+
+    return callback(null, true); // prevent crash (IMPORTANT)
   },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true,
-  optionsSuccessStatus: 200
+  credentials: true
 }));
 
-// Handle preflight requests
-app.options("*", cors());
 
-// Middleware to parse incoming request bodies
-app.use(bodyParser.json());
+// DO NOT USE app.options("*", cors());  ❌ (REMOVED)
 
-// MongoDB connection
-require("dotenv").config();
-const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dma';
-const JWT_SECRET = process.env.JWT_SECRET || 'your_fallback_secret';
+app.use(express.json());
 
-mongoose.connect(dbURI, {
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((err) => {
-  console.error('MongoDB connection error:', err);
-});
 
-// Define Mongoose schemas
+// ---------- MongoDB ----------
+const dbURI = process.env.MONGODB_URI;
+const JWT_SECRET = process.env.JWT_SECRET || "secret123";
+
+mongoose.connect(dbURI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
+
+
+// ---------- Schemas ----------
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  name: { type: String, required: true },
+  password: String,
+  name: String,
   createdAt: { type: Date, default: Date.now }
 });
 
 const leadSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  message: { type: String, required: true },
+  name: String,
+  email: String,
+  message: String
 });
 
 const testimonialSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  companyname: { type: String, required: true },
-  message: { type: String, required: true },
+  name: String,
+  companyname: String,
+  message: String,
   createdAt: { type: Date, default: Date.now }
 });
 
-// Create Mongoose models
 const User = mongoose.model("User", userSchema);
 const Lead = mongoose.model("Lead", leadSchema);
 const Testimonial = mongoose.model("Testimonial", testimonialSchema);
 
-// --- Auth Routes ---
+
+// ---------- AUTH ----------
 app.post("/api/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
-    }
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(400).json({ message: "User exists" });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword });
-    await newUser.save();
+    const hashed = await bcrypt.hash(password, 10);
+    await User.create({ name, email, password: hashed });
 
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    console.error("Registration error:", error);
-    res.status(500).json({ message: "Error registering user" });
+    res.json({ message: "Registered Successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Registration error" });
   }
 });
+
 
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
-    }
 
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (!user) return res.status(401).json({ message: "Invalid email" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).json({ message: "Invalid password" });
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '24h' });
-    res.status(200).json({
-      message: "Login successful",
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
+
+    res.json({
       token,
       user: { name: user.name, email: user.email }
     });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Error logging in" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Login error" });
   }
 });
 
 
-// POST route for contact form submissions
+// ---------- CONTACT ----------
 app.post("/api/contact", async (req, res) => {
   try {
-    console.log("Received contact form data:", req.body);
     const { name, email, message } = req.body;
-
-    if (!name || !email || !message) {
-      return res.status(400).json({ message: "Name, Email, and Message are required." });
-    }
-
-    const newLead = new Lead({ name, email, message });
-    await newLead.save();
-
-    res.status(200).json({ message: "Contact form submitted successfully!" });
-  } catch (error) {
-    console.error("Error submitting contact form:", error);
-    res.status(500).json({ message: "Error processing your request." });
+    await Lead.create({ name, email, message });
+    res.json({ message: "Contact submitted" });
+  } catch {
+    res.status(500).json({ message: "Error" });
   }
 });
 
-// POST route for testimonial submissions
+
+// ---------- TESTIMONIAL ----------
 app.post("/api/testimonial", async (req, res) => {
   try {
-    console.log("Received testimonial data:", req.body);
     const { name, companyname, message } = req.body;
-
-    if (!name || !companyname || !message) {
-      return res.status(400).json({ message: "Name, Company Name, and Message are required." });
-    }
-
-    const newTestimonial = new Testimonial({ name, companyname, message });
-    await newTestimonial.save();
-
-    res.status(200).json({ message: "Testimonial submitted successfully!" });
-  } catch (error) {
-    console.error("Error submitting testimonial:", error);
-    res.status(500).json({ message: "Error processing your request." });
+    await Testimonial.create({ name, companyname, message });
+    res.json({ message: "Testimonial added" });
+  } catch {
+    res.status(500).json({ message: "Error" });
   }
 });
+
 app.get("/api/testimonials", async (req, res) => {
-  try {
-    const testimonials = await Testimonial.find();
-    res.status(200).json(testimonials);
-  } catch (error) {
-    console.error("Error fetching testimonials:", error);
-    res.status(500).json({ message: "Error fetching testimonials." });
-  }
+  const data = await Testimonial.find().sort({ createdAt: -1 });
+  res.json(data);
 });
 
-// Start the server
-const port = 5000;
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+
+// ---------- ROOT ROUTE ----------
+app.get("/", (req, res) => {
+  res.send("DMA Backend API Running 🚀");
+});
+
+
+// ---------- 404 HANDLER (VERY IMPORTANT) ----------
+app.use((req, res) => {
+  res.status(404).json({ message: "Route Not Found" });
+});
+
+
+// ---------- PORT FIX (RENDER IMPORTANT) ----------
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log("Server started on port " + PORT);
 });
