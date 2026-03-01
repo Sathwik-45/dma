@@ -8,11 +8,15 @@ const jwt = require("jsonwebtoken");
 // Initialize the app
 const app = express();
 
+// Enable CORS
+app.use(cors({
+  origin: ["https://dma-bay.vercel.app", "http://localhost:5000", "http://localhost:63083"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 // Middleware to parse incoming request bodies
 app.use(bodyParser.json());
-
-// Enable CORS for all origins (you can adjust this later for production)
-app.use(cors());
 
 // MongoDB connection
 require("dotenv").config();
