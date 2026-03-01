@@ -162,6 +162,7 @@
     <p>&copy; 2026 SK Digital Marketing Agency. All rights reserved.</p>
   </footer>
 
+  <script src="config.js"></script>
   <script>
     // Check Auth Status
     function checkAuth() {
@@ -206,7 +207,7 @@
     async function loadTestimonials() {
       const grid = document.getElementById('testimonialGrid');
       try {
-        const response = await fetch('http://localhost:5000/api/testimonials');
+        const response = await fetch(`${CONFIG.API_URL}/testimonials`);
         const data = await response.json();
 
         if (!data || data.length === 0) {
@@ -250,7 +251,7 @@
       };
 
       try {
-        const response = await fetch('http://localhost:5000/api/testimonial', {
+        const response = await fetch(`${CONFIG.API_URL}/testimonial`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
@@ -280,7 +281,7 @@
       };
 
       try {
-        const response = await fetch('http://localhost:5000/api/contact', {
+        const response = await fetch(`${CONFIG.API_URL}/contact`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)

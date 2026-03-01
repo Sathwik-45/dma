@@ -1,0 +1,15 @@
+{
+    "name": "digital-marketing-agency",
+    "version": "1.0.0",
+    "description": "Digital Marketing Agency Project",
+    "scripts": {
+        "start": "npm run server",
+        "server": "cd server && npm start",
+        "client": "npx serve client",
+        "dev:server": "cd server && npm run dev",
+        "install:all": "npm install && cd server && npm install"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
