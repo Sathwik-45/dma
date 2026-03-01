@@ -138,14 +138,20 @@ app.post("/api/testimonial", async (req, res) => {
 });
 
 app.get("/api/testimonials", async (req, res) => {
-  const data = await Testimonial.find().sort({ createdAt: -1 });
-  res.json(data);
+  try {
+    const data = await Testimonial.find().sort({ createdAt: -1 });
+    res.json(data);
+  } catch (err) {
+    console.error("Fetch testimonials error:", err);
+    res.status(500).json({ message: "Error fetching testimonials" });
+  }
 });
 
 
 // ---------- ROOT ROUTE ----------
 app.get("/", (req, res) => {
-  res.send("DMA Backend API Running 🚀");
+  const dbStatus = mongoose.connection.readyState === 1 ? "Connected 🟢" : "Disconnected 🔴";
+  res.send(`DMA Backend API Running 🚀 | Database: ${dbStatus}`);
 });
 
 
